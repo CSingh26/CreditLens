@@ -15,6 +15,7 @@ from .database import get_session, init_db
 from .models import Applicant, Score
 from .schemas import ApplicantCreate, ApplicantRead, ScoreRead, ScoreResponse
 from .scoring import explain_payload, load_artifacts, load_metadata, load_metrics, score_payload
+from ml.fairness import build_fairness_report
 from .seed import seed_if_empty
 
 logger = logging.getLogger(__name__)
@@ -95,6 +96,18 @@ def model_card() -> str:
     if not card_path.exists():
         return "Model card not found. Generate docs/model-card.md."
     return card_path.read_text()
+
+
+@app.get("/fairness/report")
+def fairness_report() -> dict[str, str | float | list | dict]:
+    ensure_artifacts()
+    try:
+        return build_fairness_report()
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Fairness report unavailable. Run: python services/api/ml/train.py",
+        ) from exc
 
 
 @app.get("/applicants", response_model=list[ApplicantRead])
