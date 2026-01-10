@@ -45,4 +45,4 @@ class ScoreRead(SQLModel):
     risk_bucket: str
     model_name: str
     created_at: datetime
-    explanations_json: Optional[str] = None
+    explanations: Optional[list[FeatureContribution]] = None

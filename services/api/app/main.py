@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -13,7 +14,7 @@ from .config import settings
 from .database import get_session, init_db
 from .models import Applicant, Score
 from .schemas import ApplicantCreate, ApplicantRead, ScoreRead, ScoreResponse
-from .scoring import load_artifacts, load_metadata, load_metrics, score_payload
+from .scoring import explain_payload, load_artifacts, load_metadata, load_metrics, score_payload
 from .seed import seed_if_empty
 
 logger = logging.getLogger(__name__)
@@ -132,12 +133,18 @@ def score_applicant(payload: ApplicantCreate) -> ScoreResponse:
     ensure_artifacts()
     output = score_payload(payload)
     metrics = model_metrics()
+    explanations = None
+    try:
+        explanations = explain_payload(payload)
+    except FileNotFoundError:
+        explanations = None
 
     return ScoreResponse(
         pd=output["pd"],
         risk_bucket=output["risk_bucket"],
         threshold=output["threshold"],
         model_name=metrics.get("selected_model", "unknown"),
+        explanations=explanations,
     )
 
 
@@ -154,14 +161,28 @@ def score_stored_applicant(
     payload = ApplicantCreate(**applicant.model_dump(exclude={"id", "created_at"}))
     output = score_payload(payload)
     metrics = model_metrics()
+    explanations = None
+    try:
+        explanations = explain_payload(payload)
+    except FileNotFoundError:
+        explanations = None
 
     score = Score(
         applicant_id=applicant_id,
         pd=output["pd"],
         risk_bucket=output["risk_bucket"],
         model_name=metrics.get("selected_model", "unknown"),
+        explanations_json=json.dumps(explanations) if explanations else None,
     )
     session.add(score)
     session.commit()
     session.refresh(score)
-    return score
+    return ScoreRead(
+        id=score.id,
+        applicant_id=score.applicant_id,
+        pd=score.pd,
+        risk_bucket=score.risk_bucket,
+        model_name=score.model_name,
+        created_at=score.created_at,
+        explanations=explanations,
+    )

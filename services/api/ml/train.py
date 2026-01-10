@@ -218,6 +218,8 @@ def train() -> dict[str, Any]:
 
     ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
     joblib.dump(artifacts, ARTIFACTS_DIR / "model.joblib")
+    background = X_train.sample(n=min(200, len(X_train)), random_state=42)
+    background.to_csv(ARTIFACTS_DIR / "background.csv", index=False)
 
     metrics_payload = {
         "selected_model": best_name,

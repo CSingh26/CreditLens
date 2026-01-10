@@ -8,6 +8,8 @@ from typing import Any
 import joblib
 import pandas as pd
 
+from ml.explain import explain_instance
+
 from .models import ApplicantBase
 
 ARTIFACTS_DIR = Path(__file__).resolve().parents[1] / "artifacts"
@@ -56,6 +58,12 @@ def score_payload(payload: ApplicantBase) -> dict[str, Any]:
         "risk_bucket": risk_bucket(probability),
         "threshold": threshold,
     }
+
+
+def explain_payload(payload: ApplicantBase, max_evals: int = 256) -> list[dict[str, float]]:
+    artifacts = load_artifacts()
+    model = artifacts["model"]
+    return explain_instance(model, payload.model_dump(), max_evals=max_evals)
 
 
 def load_metadata() -> dict[str, Any]:
