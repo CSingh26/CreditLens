@@ -27,6 +27,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 from .download_data import download_data
 from .features import CATEGORICAL_COLUMNS, FEATURE_COLUMNS, NUMERIC_COLUMNS, TARGET_COLUMN
+from .monitoring import save_baseline
 
 ARTIFACTS_DIR = Path(__file__).resolve().parents[1] / "artifacts"
 
@@ -220,6 +221,7 @@ def train() -> dict[str, Any]:
     joblib.dump(artifacts, ARTIFACTS_DIR / "model.joblib")
     background = X_train.sample(n=min(200, len(X_train)), random_state=42)
     background.to_csv(ARTIFACTS_DIR / "background.csv", index=False)
+    save_baseline(X_train)
 
     metrics_payload = {
         "selected_model": best_name,

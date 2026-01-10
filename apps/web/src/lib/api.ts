@@ -1,4 +1,10 @@
-import type { Applicant, FairnessReport, ModelMetrics, ScoreResponse } from "@/lib/types";
+import type {
+  Applicant,
+  FairnessReport,
+  ModelMetrics,
+  MonitoringSummary,
+  ScoreResponse,
+} from "@/lib/types";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
@@ -81,4 +87,31 @@ export async function getFairnessReport(): Promise<FairnessReport> {
   };
 
   return (await apiFetch<FairnessReport>("/fairness/report")) ?? fallback;
+}
+
+export async function getMonitoringSummary(): Promise<MonitoringSummary> {
+  const fallback: MonitoringSummary = {
+    generated_at: new Date().toISOString(),
+    count: 200,
+    features: [
+      {
+        feature: "LIMIT_BAL",
+        baseline_mean: 160000,
+        current_mean: 150000,
+        mean_shift: -0.25,
+        psi: 0.08,
+        drift_level: "low",
+      },
+      {
+        feature: "PAY_0",
+        baseline_mean: 0.2,
+        current_mean: 0.6,
+        mean_shift: 0.4,
+        psi: 0.18,
+        drift_level: "moderate",
+      },
+    ],
+  };
+
+  return (await apiFetch<MonitoringSummary>("/monitoring/summary")) ?? fallback;
 }

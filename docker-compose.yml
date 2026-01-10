@@ -6,9 +6,9 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=sqlite:///./creditlens.db
+      - DATABASE_URL=sqlite:///./data/creditlens.db
     volumes:
-      - api-data:/app/services/api
+      - api-data:/app/services/api/data
   web:
     build:
       context: .

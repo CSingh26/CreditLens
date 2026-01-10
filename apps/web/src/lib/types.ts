@@ -83,3 +83,18 @@ export interface FairnessReport {
   overall: FairnessGroupMetrics;
   slices: FairnessSlice[];
 }
+
+export interface MonitoringFeatureSummary {
+  feature: string;
+  baseline_mean: number;
+  current_mean: number;
+  mean_shift: number;
+  psi: number;
+  drift_level: "low" | "moderate" | "high";
+}
+
+export interface MonitoringSummary {
+  generated_at: string;
+  count: number;
+  features: MonitoringFeatureSummary[];
+}

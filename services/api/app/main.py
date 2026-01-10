@@ -5,6 +5,7 @@ import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
 
+import pandas as pd
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, PlainTextResponse
@@ -16,6 +17,8 @@ from .models import Applicant, Score
 from .schemas import ApplicantCreate, ApplicantRead, ScoreRead, ScoreResponse
 from .scoring import explain_payload, load_artifacts, load_metadata, load_metrics, score_payload
 from ml.fairness import build_fairness_report
+from ml.features import FEATURE_COLUMNS
+from ml.monitoring import load_baseline, summarize_drift
 from .seed import seed_if_empty
 
 logger = logging.getLogger(__name__)
@@ -96,6 +99,25 @@ def model_card() -> str:
     if not card_path.exists():
         return "Model card not found. Generate docs/model-card.md."
     return card_path.read_text()
+
+
+@app.get("/monitoring/summary")
+def monitoring_summary(session: Session = Depends(get_session)) -> dict[str, str | float | list | dict]:
+    ensure_artifacts()
+    try:
+        baseline = load_baseline()
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Monitoring baseline missing. Run: python services/api/ml/train.py",
+        ) from exc
+
+    applicants = list(session.exec(select(Applicant)))
+    rows = [
+        applicant.model_dump(exclude={"id", "created_at"}) for applicant in applicants
+    ]
+    current_df = pd.DataFrame(rows) if rows else pd.DataFrame(columns=FEATURE_COLUMNS)
+    return summarize_drift(current_df, baseline)
 
 
 @app.get("/fairness/report")
