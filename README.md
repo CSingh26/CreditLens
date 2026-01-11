@@ -4,10 +4,35 @@ CreditLens is a demo loan/credit default risk scoring platform with explainabili
 
 > Demo project. Not for real lending decisions.
 
+## Architecture
+```mermaid
+flowchart LR
+  User[Underwriter] --> Web[Next.js Dashboard]
+  Web --> API[FastAPI Scoring API]
+  API --> DB[(SQLite Applicants)]
+  API --> Artifacts[(Model Artifacts)]
+  Artifacts <-- Train[Training Pipeline]
+  Train --> UCI[UCI Dataset via ucimlrepo]
+```
+
+## ML Pipeline
+```mermaid
+flowchart TD
+  Raw[UCI Default of Credit Card Clients] --> Prep[Preprocess + Split]
+  Prep --> LR[Logistic Regression]
+  Prep --> RF[Random Forest]
+  LR --> Cal[Probability Calibration]
+  RF --> Cal
+  Cal --> Metrics[Metrics + Threshold]
+  Cal --> Artifacts[Artifacts + Background + Baseline]
+  Artifacts --> API[FastAPI Serving]
+```
+
 ## Repo Layout
 - `apps/web`: Next.js dashboard
 - `services/api`: FastAPI scoring service + training pipeline
 - `docs`: model card and documentation
+- `scripts`: utility scripts
 
 ## Quickstart (Local Dev)
 ```bash
@@ -26,9 +51,15 @@ cd apps/web
 pnpm dev
 ```
 
-Open `http://localhost:3000`.
+Open `http://127.0.0.1:3000`.
 
-### Makefile helpers
+## One-Command Verify + Run
+Run tests first, then start both services if everything passes:
+```bash
+./scripts/run_all.sh
+```
+
+## Makefile Helpers
 ```bash
 make train
 make test
@@ -63,6 +94,9 @@ docker compose up --build
 - `/fairness`
 - `/monitoring`
 - `/model-card`
+
+## Release Notes
+See `RELEASE.md` for the latest release summary.
 
 ## Disclaimer
 This project is for demonstration only and is **not** suitable for real lending decisions.

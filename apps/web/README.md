@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CreditLens Web
 
-## Getting Started
+The CreditLens dashboard is a Next.js app that surfaces scoring, explanations, fairness diagnostics, and monitoring views.
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Architecture
+```mermaid
+flowchart TD
+  Dashboard[/Dashboard/] --> Metrics[/model/metrics]
+  Applicants[/Applicants/] --> List[/applicants]
+  ApplicantDetail[/Applicant Detail/] --> Score[/applicants/{id}/score]
+  Fairness[/Fairness/] --> FairnessAPI[/fairness/report]
+  Monitoring[/Monitoring/] --> Drift[/monitoring/summary]
+  ModelCard[/Model Card/] --> Docs[docs/model-card.md]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Development
+```bash
+pnpm install
+pnpm dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+By default the app expects the API at `http://127.0.0.1:8000`. Override it with:
+```bash
+NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000 pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## UI Pages
+- `/dashboard`
+- `/applicants`
+- `/applicants/[id]`
+- `/fairness`
+- `/monitoring`
+- `/model-card`
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Disclaimer
+Demo project. Not for real lending decisions.
