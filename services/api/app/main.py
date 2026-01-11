@@ -68,6 +68,15 @@ def healthz() -> dict[str, str]:
     return {"status": "ok"}
 
 
+@app.get("/")
+def root() -> dict[str, str]:
+    return {
+        "message": "CreditLens API running",
+        "health": "/healthz",
+        "docs": "/docs",
+    }
+
+
 @app.get("/model/metadata")
 def model_metadata() -> dict[str, str | int | list]:
     ensure_artifacts()

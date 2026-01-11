@@ -39,8 +39,10 @@ export async function getModelMetrics(): Promise<ModelMetrics> {
   return (await apiFetch<ModelMetrics>("/model/metrics")) ?? fallback;
 }
 
-export async function getApplicants(limit = 200): Promise<Applicant[]> {
-  return (await apiFetch<Applicant[]>(`/applicants?limit=${limit}&offset=0`)) ?? [];
+export async function getApplicants(
+  limit = 200
+): Promise<Applicant[] | null> {
+  return await apiFetch<Applicant[]>(`/applicants?limit=${limit}&offset=0`);
 }
 
 export async function getApplicant(id: string): Promise<Applicant | null> {

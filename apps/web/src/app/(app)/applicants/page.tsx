@@ -1,7 +1,10 @@
 import { ApplicantsTable } from "@/components/applicants/ApplicantsTable";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getApplicants } from "@/lib/api";
 
-export default function ApplicantsPage() {
+export default async function ApplicantsPage() {
+  const applicants = await getApplicants();
+
   return (
     <div className="space-y-6">
       <div>
@@ -14,8 +17,11 @@ export default function ApplicantsPage() {
         <CardHeader>
           <CardTitle>Applicant Directory</CardTitle>
         </CardHeader>
-        <CardContent>
-          <ApplicantsTable />
+        <CardContent className="space-y-6">
+          <ApplicantsTable
+            initialApplicants={applicants ?? []}
+            initialError={!applicants}
+          />
         </CardContent>
       </Card>
     </div>
