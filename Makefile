@@ -5,7 +5,7 @@ dev:
 	@echo "Frontend: cd apps/web && pnpm dev"
 
 train:
-	python3 services/api/ml/train.py
+	cd services/api && ../../.venv/bin/python -m ml.train
 
 test:
 	cd services/api && pytest

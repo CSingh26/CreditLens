@@ -88,7 +88,7 @@ def ensure_artifacts() -> None:
     except FileNotFoundError as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Model artifacts missing. Run: python services/api/ml/train.py",
+            detail="Model artifacts missing. From services/api run: python -m ml.train",
         ) from exc
 
 
@@ -114,7 +114,7 @@ def model_metadata() -> dict:
     except FileNotFoundError as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Model metadata missing. Run: python services/api/ml/train.py",
+            detail="Model metadata missing. From services/api run: python -m ml.train",
         ) from exc
 
 
@@ -126,7 +126,7 @@ def model_metrics() -> dict:
     except FileNotFoundError as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Model metrics missing. Run: python services/api/ml/train.py",
+            detail="Model metrics missing. From services/api run: python -m ml.train",
         ) from exc
 
 
@@ -147,7 +147,7 @@ def monitoring_summary(session: Session = Depends(get_session)) -> dict[str, str
     except FileNotFoundError as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Monitoring baseline missing. Run: python services/api/ml/train.py",
+            detail="Monitoring baseline missing. From services/api run: python -m ml.train",
         ) from exc
 
     applicants = list(session.exec(select(Applicant)))
@@ -166,7 +166,7 @@ def fairness_report() -> dict[str, str | float | list | dict]:
     except FileNotFoundError as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Fairness report unavailable. Run: python services/api/ml/train.py",
+            detail="Fairness report unavailable. From services/api run: python -m ml.train",
         ) from exc
 
 
