@@ -19,3 +19,7 @@ The existing README still starts with unsupported “production-ready” and doe
 ## Validation performed
 
 Read behavior/evaluation/research/routes and frontend/proxy, inspected research tests, executed the no-class/no-flag metric counterexample against the real evaluation module with bytecode writes disabled. No full build rerun or source modification in FraudPulse.
+
+## Follow-up verification
+
+At FraudPulse revision 8dcfa4167ede5da5620c782681081e0a8b2d454f, read-only inspection confirms all three findings addressed: undefined precision/recall return null; cost/file inputs are disabled while busy and cost changes clear prior results; scenario-cost UI and methodology explicitly assume all reviewed fraud loss is prevented. No remaining blocker from this bounded review.
