@@ -28,10 +28,11 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
-    with get_session() as session:
-        seeded = seed_if_empty(session)
-        if seeded:
-            logger.info("Seeded %s applicants", seeded)
+    if settings.seed_applicants:
+        with get_session() as session:
+            seeded = seed_if_empty(session)
+            if seeded:
+                logger.info("Seeded %s applicants", seeded)
     yield
 
 

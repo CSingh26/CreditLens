@@ -15,6 +15,8 @@ class Settings(BaseSettings):
         default="http://localhost:3000,http://127.0.0.1:3000",
         validation_alias="CORS_ORIGINS",
     )
+    seed_applicants: bool = False
+
     max_request_size: int = Field(
         default=1_000_000,
         validation_alias="MAX_REQUEST_SIZE",

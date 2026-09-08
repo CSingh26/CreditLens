@@ -110,8 +110,8 @@ def calibrate_model(model: Pipeline, X_val: pd.DataFrame, y_val: pd.Series) -> C
 
 def find_best_threshold(y_true: np.ndarray, y_prob: np.ndarray) -> ThresholdResult:
     precision, recall, thresholds = precision_recall_curve(y_true, y_prob)
-    precision = precision[1:]
-    recall = recall[1:]
+    precision = precision[:-1]
+    recall = recall[:-1]
 
     f1_scores = (2 * precision * recall) / (precision + recall + 1e-12)
     best_index = int(np.argmax(f1_scores))
@@ -183,6 +183,10 @@ def train() -> dict[str, Any]:
         stratify=y_temp,
     )
 
+    # Calibration labels are never reused for model selection or threshold tuning.
+    X_cal, X_val, y_cal, y_val = train_test_split(
+        X_val, y_val, test_size=0.5, random_state=43, stratify=y_val,
+    )
     preprocessor = build_preprocessor()
     candidates = build_candidates(preprocessor)
 
@@ -191,7 +195,7 @@ def train() -> dict[str, Any]:
 
     for candidate in candidates:
         candidate.estimator.fit(X_train, y_train)
-        calibrated = calibrate_model(candidate.estimator, X_val, y_val)
+        calibrated = calibrate_model(candidate.estimator, X_cal, y_cal)
         y_val_prob = calibrated.predict_proba(X_val)[:, 1]
         candidate_metrics[candidate.name] = {
             "roc_auc": float(roc_auc_score(y_val, y_val_prob)),
@@ -238,7 +242,8 @@ def train() -> dict[str, Any]:
         "target": TARGET_COLUMN,
         "splits": {
             "train": int(X_train.shape[0]),
-            "val": int(X_val.shape[0]),
+            "calibration": int(X_cal.shape[0]),
+            "selection": int(X_val.shape[0]),
             "test": int(X_test.shape[0]),
         },
     }
