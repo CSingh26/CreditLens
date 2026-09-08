@@ -23,3 +23,11 @@ Legacy predictors include sex, age, education and marital status. Their presence
 ## Limitations
 
 No monitoring of realized repayment outcomes, external validation, confidence intervals, reject-inference solution, causal model, regulated model governance, model registry, retraining trigger, security-hardened hosting or audit trail. See [limitations](LIMITATIONS.md).
+
+## Reproducibility improvements
+
+Provider X1…X23/Y columns are normalized into documented UCI names. Training records the normalized CSV SHA-256, exact split row indices, seeds, sklearn version and next-month horizon. Fairness evaluation reuses saved test indices and rejects a changed CSV hash; older artifacts without provenance require retraining. Numeric monetary features are standardized using training-only statistics to avoid the baseline optimizer's observed convergence problem.
+
+## Observed run, 2026-09-08
+
+The full normalized 30,000-row UCI run selected random forest on the selection subset. On the untouched 4,500-row test subset it produced ROC-AUC 0.778156, average precision 0.549219 and Brier 0.136116. These are observed within-snapshot results, not contemporary or annual lending validation. [Full metrics and provenance](OBSERVED_MODEL_EVALUATION.json) include the source hash and 21,000/2,250/2,250/4,500 train/calibration/selection/test counts. The final training run completed without the earlier logistic convergence warning after train-fitted monetary standardization.

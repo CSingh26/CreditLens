@@ -8,8 +8,8 @@ from sqlmodel import Field, SQLModel
 
 
 class ApplicantBase(SQLModel):
-    model_config = ConfigDict(extra="forbid")
-    LIMIT_BAL: float = Field(ge=0)
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
+    LIMIT_BAL: float = Field(ge=0, le=1e12)
     SEX: int = Field(ge=0, le=3)
     EDUCATION: int = Field(ge=0, le=6)
     MARRIAGE: int = Field(ge=0, le=4)
@@ -20,18 +20,18 @@ class ApplicantBase(SQLModel):
     PAY_4: int = Field(ge=-2, le=9)
     PAY_5: int = Field(ge=-2, le=9)
     PAY_6: int = Field(ge=-2, le=9)
-    BILL_AMT1: float
-    BILL_AMT2: float
-    BILL_AMT3: float
-    BILL_AMT4: float
-    BILL_AMT5: float
-    BILL_AMT6: float
-    PAY_AMT1: float = Field(ge=0)
-    PAY_AMT2: float = Field(ge=0)
-    PAY_AMT3: float = Field(ge=0)
-    PAY_AMT4: float = Field(ge=0)
-    PAY_AMT5: float = Field(ge=0)
-    PAY_AMT6: float = Field(ge=0)
+    BILL_AMT1: float = Field(ge=-1e12, le=1e12)
+    BILL_AMT2: float = Field(ge=-1e12, le=1e12)
+    BILL_AMT3: float = Field(ge=-1e12, le=1e12)
+    BILL_AMT4: float = Field(ge=-1e12, le=1e12)
+    BILL_AMT5: float = Field(ge=-1e12, le=1e12)
+    BILL_AMT6: float = Field(ge=-1e12, le=1e12)
+    PAY_AMT1: float = Field(ge=0, le=1e12)
+    PAY_AMT2: float = Field(ge=0, le=1e12)
+    PAY_AMT3: float = Field(ge=0, le=1e12)
+    PAY_AMT4: float = Field(ge=0, le=1e12)
+    PAY_AMT5: float = Field(ge=0, le=1e12)
+    PAY_AMT6: float = Field(ge=0, le=1e12)
 
 
 class Applicant(ApplicantBase, table=True):

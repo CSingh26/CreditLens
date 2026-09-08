@@ -22,3 +22,5 @@ The application keeps SQLite applicant records and model artifacts separate from
 Reproducibility: exact JavaScript package versions and pnpm lockfile; Python 3.12 requirements-lock.txt pins the observed environment. Pure analysis is deterministic for identical JSON. Imported source and observation period return with cohort results; retain input JSON with a report to reproduce it. The optional UCI training uses fixed random seeds and cached input data. Data/artifacts are gitignored.
 
 CI installs locks, lints Python/TypeScript, typechecks frontend, runs domain/data/API/regression tests, compiles Python, builds production Next.js, and runs the actual browser→API journey. No credentials or live provider is required for CI.
+
+`CREDITLENS_ARTIFACTS_DIR` optionally configures one shared training/serving artifact root. Browser tests set it to an isolated empty directory so model-unavailable behavior is tested even after a researcher trains locally. Validation errors return only location/type/message, preventing invalid nonfinite numbers or personal inputs from being echoed into JSON.

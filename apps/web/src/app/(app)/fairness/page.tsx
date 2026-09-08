@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/table";
 import { getFairnessReport } from "@/lib/api";
 
+const percent = (value: number | null) => value === null ? "Undefined" : `${(value * 100).toFixed(1)}%`;
+
 export default async function FairnessPage() {
   const report = await getFairnessReport();
   if (!report) return <p role="status">Data unavailable. Start the API and train the historical research model to load this report.</p>;
@@ -44,13 +46,13 @@ export default async function FairnessPage() {
           <div className="rounded-lg bg-[var(--muted)] p-4">
             <p className="text-xs text-[var(--muted-foreground)]">TPR</p>
             <p className="text-xl font-semibold">
-              {(report.overall.tpr * 100).toFixed(1)}%
+              {percent(report.overall.tpr)}
             </p>
           </div>
           <div className="rounded-lg bg-[var(--muted)] p-4">
             <p className="text-xs text-[var(--muted-foreground)]">FPR</p>
             <p className="text-xl font-semibold">
-              {(report.overall.fpr * 100).toFixed(1)}%
+              {percent(report.overall.fpr)}
             </p>
           </div>
           <div className="rounded-lg bg-[var(--muted)] p-4">
@@ -89,8 +91,8 @@ export default async function FairnessPage() {
                       <TableCell>
                         {(group.selection_rate * 100).toFixed(1)}%
                       </TableCell>
-                      <TableCell>{(group.tpr * 100).toFixed(1)}%</TableCell>
-                      <TableCell>{(group.fpr * 100).toFixed(1)}%</TableCell>
+                      <TableCell>{percent(group.tpr)}</TableCell>
+                      <TableCell>{percent(group.fpr)}</TableCell>
                       <TableCell>
                         {group.auc ? group.auc.toFixed(2) : "--"}
                       </TableCell>
@@ -101,8 +103,8 @@ export default async function FairnessPage() {
               <FairnessBarChart
                 data={slice.groups.map((group) => ({
                   group: group.group,
-                  tpr: Number((group.tpr * 100).toFixed(1)),
-                  fpr: Number((group.fpr * 100).toFixed(1)),
+                  tpr: group.tpr === null ? null : Number((group.tpr * 100).toFixed(1)),
+                  fpr: group.fpr === null ? null : Number((group.fpr * 100).toFixed(1)),
                 }))}
               />
             </CardContent>

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from datetime import datetime
-from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -10,7 +9,7 @@ import pandas as pd
 
 from .features import FEATURE_COLUMNS
 
-ARTIFACTS_DIR = Path(__file__).resolve().parents[1] / "artifacts"
+from .paths import ARTIFACTS_DIR
 BASELINE_PATH = ARTIFACTS_DIR / "monitoring_baseline.json"
 
 

@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
 import pandas as pd
 
 from .features import FEATURE_COLUMNS
 
-ARTIFACTS_DIR = Path(__file__).resolve().parents[1] / "artifacts"
+from .paths import ARTIFACTS_DIR
 BACKGROUND_PATH = ARTIFACTS_DIR / "background.csv"
 
 

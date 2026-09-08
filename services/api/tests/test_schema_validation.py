@@ -44,3 +44,11 @@ def test_rejects_invalid_age() -> None:
     payload["AGE"] = 10
     with pytest.raises(ValidationError):
         ApplicantCreate(**payload)
+
+
+def test_extreme_applicant_money_rejected_by_api():
+    from fastapi.testclient import TestClient
+    from app.main import app
+    payload = base_payload()
+    payload['LIMIT_BAL'] = 1e13
+    assert TestClient(app).post('/applicants', json=payload).status_code == 422

@@ -1,0 +1,100 @@
+{
+  "metadata": {
+    "trained_at": "2026-09-08T21:07:15.428148+00:00",
+    "data_sha256": "dfb1570f223efb65c0084027570369bdff6cc291b8238b9adce17ab60da4ca83",
+    "source": "https://archive.ics.uci.edu/dataset/350/defaultofcreditcardclients",
+    "rows": 30000,
+    "currency": "TWD",
+    "prediction_horizon": "next month",
+    "splits": {
+      "train": 21000,
+      "calibration": 2250,
+      "selection": 2250,
+      "test": 4500
+    },
+    "split_seeds": [
+      42,
+      43
+    ],
+    "sklearn_version": "1.5.2"
+  },
+  "metrics": {
+    "selected_model": "random_forest",
+    "candidate_metrics": {
+      "logistic_regression": {
+        "roc_auc": 0.7103166632424324,
+        "pr_auc": 0.4951542970998476
+      },
+      "random_forest": {
+        "roc_auc": 0.7727540370574847,
+        "pr_auc": 0.5382721221740117
+      }
+    },
+    "threshold": {
+      "threshold": 0.27989473095139095,
+      "f1": 0.5420743639916725,
+      "precision": 0.5276190476190477,
+      "recall": 0.5573440643863179
+    },
+    "test_metrics": {
+      "roc_auc": 0.7781560030074637,
+      "pr_auc": 0.5492192453297451,
+      "brier_score": 0.13611581604161804,
+      "confusion": {
+        "tn": 2969,
+        "fp": 535,
+        "fn": 419,
+        "tp": 577
+      },
+      "default_rate": 0.22133333333333333,
+      "predicted_rate": 0.24711111111111111
+    },
+    "calibration_curve": [
+      {
+        "bin": 0,
+        "mean_predicted_prob": 0.07507750132962081,
+        "fraction_positives": 0.06997084548104957
+      },
+      {
+        "bin": 1,
+        "mean_predicted_prob": 0.1406847281894019,
+        "fraction_positives": 0.14409937888198757
+      },
+      {
+        "bin": 2,
+        "mean_predicted_prob": 0.24458759097679286,
+        "fraction_positives": 0.23217922606924643
+      },
+      {
+        "bin": 3,
+        "mean_predicted_prob": 0.34370305218427205,
+        "fraction_positives": 0.36097560975609755
+      },
+      {
+        "bin": 4,
+        "mean_predicted_prob": 0.44014243093824157,
+        "fraction_positives": 0.47761194029850745
+      },
+      {
+        "bin": 5,
+        "mean_predicted_prob": 0.5487652721490427,
+        "fraction_positives": 0.52
+      },
+      {
+        "bin": 6,
+        "mean_predicted_prob": 0.6499438444303477,
+        "fraction_positives": 0.5943775100401606
+      },
+      {
+        "bin": 7,
+        "mean_predicted_prob": 0.7358343235930781,
+        "fraction_positives": 0.7636363636363637
+      },
+      {
+        "bin": 8,
+        "mean_predicted_prob": 0.8038008920163983,
+        "fraction_positives": 0.8571428571428571
+      }
+    ]
+  }
+}

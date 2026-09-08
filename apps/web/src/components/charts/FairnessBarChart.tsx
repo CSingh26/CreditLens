@@ -12,8 +12,8 @@ import {
 
 export interface FairnessDatum {
   group: string;
-  tpr: number;
-  fpr: number;
+  tpr: number | null;
+  fpr: number | null;
 }
 
 export function FairnessBarChart({ data }: { data: FairnessDatum[] }) {

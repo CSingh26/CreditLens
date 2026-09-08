@@ -12,7 +12,7 @@ from ml.explain import explain_instance
 
 from .models import ApplicantBase
 
-ARTIFACTS_DIR = Path(__file__).resolve().parents[1] / "artifacts"
+from ml.paths import ARTIFACTS_DIR
 MODEL_PATH = ARTIFACTS_DIR / "model.joblib"
 METRICS_PATH = ARTIFACTS_DIR / "metrics.json"
 METADATA_PATH = ARTIFACTS_DIR / "metadata.json"

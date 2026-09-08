@@ -66,8 +66,8 @@ export interface FairnessGroupMetrics {
   count: number;
   default_rate: number;
   selection_rate: number;
-  tpr: number;
-  fpr: number;
+  tpr: number | null;
+  fpr: number | null;
   auc: number | null;
 }
 

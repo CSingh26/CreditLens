@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pandas as pd
 from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, PlainTextResponse
 from sqlmodel import Session, select
@@ -45,6 +46,15 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_error(request: Request, exc: RequestValidationError):
+    # Do not echo invalid NaN/Inf or private borrower payloads into JSON errors.
+    return JSONResponse(status_code=422, content={"detail": [
+        {key: error[key] for key in ("loc", "msg", "type")}
+        for error in exc.errors()
+    ]})
 
 
 @app.middleware("http")
@@ -97,7 +107,7 @@ def root() -> dict[str, str]:
 
 
 @app.get("/model/metadata")
-def model_metadata() -> dict[str, str | int | list]:
+def model_metadata() -> dict:
     ensure_artifacts()
     try:
         return load_metadata()
@@ -109,7 +119,7 @@ def model_metadata() -> dict[str, str | int | list]:
 
 
 @app.get("/model/metrics")
-def model_metrics() -> dict[str, str | int | float | dict]:
+def model_metrics() -> dict:
     ensure_artifacts()
     try:
         return load_metrics()

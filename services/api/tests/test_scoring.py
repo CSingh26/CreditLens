@@ -37,3 +37,13 @@ def test_prepare_dataframe_preserves_feature_order() -> None:
     )
     frame = prepare_dataframe(payload, FEATURE_COLUMNS)
     assert list(frame.columns) == FEATURE_COLUMNS
+
+
+def test_nonfinite_legacy_applicant_values_rejected():
+    import pytest
+    from pydantic import ValidationError
+    data = {column: 1 for column in FEATURE_COLUMNS}
+    data['AGE'] = 40
+    for field, value in [('LIMIT_BAL', float('inf')), ('BILL_AMT1', float('nan'))]:
+        with pytest.raises(ValidationError):
+            ApplicantCreate(**(data | {field: value}))

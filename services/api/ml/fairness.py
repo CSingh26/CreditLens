@@ -1,19 +1,18 @@
 from __future__ import annotations
 
+import hashlib
 import json
-from datetime import datetime
-from pathlib import Path
+from datetime import datetime, timezone
 from typing import Any
 
 import joblib
 import pandas as pd
 from sklearn.metrics import confusion_matrix, roc_auc_score
-from sklearn.model_selection import train_test_split
 
 from .download_data import download_data
 from .features import FEATURE_COLUMNS, TARGET_COLUMN
 
-ARTIFACTS_DIR = Path(__file__).resolve().parents[1] / "artifacts"
+from .paths import ARTIFACTS_DIR
 MODEL_PATH = ARTIFACTS_DIR / "model.joblib"
 
 
@@ -44,16 +43,16 @@ def safe_auc(y_true: pd.Series, y_prob: pd.Series) -> float | None:
 def group_metrics(y_true: pd.Series, y_prob: pd.Series, threshold: float) -> dict[str, Any]:
     y_pred = (y_prob >= threshold).astype(int)
     tn, fp, fn, tp = confusion_matrix(y_true, y_pred, labels=[0, 1]).ravel()
-    tpr = tp / (tp + fn) if (tp + fn) else 0.0
-    fpr = fp / (fp + tn) if (fp + tn) else 0.0
+    tpr = tp / (tp + fn) if (tp + fn) else None
+    fpr = fp / (fp + tn) if (fp + tn) else None
     selection_rate = y_pred.mean()
 
     return {
         "count": int(len(y_true)),
         "default_rate": float(y_true.mean()),
         "selection_rate": float(selection_rate),
-        "tpr": float(tpr),
-        "fpr": float(fpr),
+        "tpr": float(tpr) if tpr is not None else None,
+        "fpr": float(fpr) if fpr is not None else None,
         "auc": safe_auc(y_true, y_prob),
     }
 
@@ -70,20 +69,12 @@ def build_fairness_report() -> dict[str, Any]:
     X = df[FEATURE_COLUMNS]
     y = df[TARGET_COLUMN].astype(int)
 
-    X_train, X_temp, y_train, y_temp = train_test_split(
-        X,
-        y,
-        test_size=0.3,
-        random_state=42,
-        stratify=y,
-    )
-    X_val, X_test, y_val, y_test = train_test_split(
-        X_temp,
-        y_temp,
-        test_size=0.5,
-        random_state=42,
-        stratify=y_temp,
-    )
+    if 'data_sha256' not in artifacts or 'test_indices' not in artifacts:
+        raise FileNotFoundError('Model lacks evaluation provenance; retrain')
+    if hashlib.sha256(data_path.read_bytes()).hexdigest() != artifacts['data_sha256']:
+        raise FileNotFoundError('Evaluation dataset changed; retrain before reporting fairness')
+    X_test = X.loc[artifacts['test_indices']]
+    y_test = y.loc[artifacts['test_indices']]
 
     y_prob = pd.Series(model.predict_proba(X_test)[:, 1], index=X_test.index)
 
@@ -101,7 +92,7 @@ def build_fairness_report() -> dict[str, Any]:
     overall = group_metrics(y_test, y_prob, threshold)
 
     return {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "threshold": threshold,
         "notes": "Fairness diagnostics only. Results are descriptive and not a compliance guarantee.",
         "overall": overall,

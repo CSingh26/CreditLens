@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from dataclasses import asdict, dataclass
-from datetime import datetime
-from pathlib import Path
+from datetime import datetime, timezone
 from typing import Any
 
 import joblib
@@ -22,14 +22,14 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 
 from .download_data import download_data
 from .features import CATEGORICAL_COLUMNS, FEATURE_COLUMNS, NUMERIC_COLUMNS, TARGET_COLUMN
 from .monitoring import save_baseline
 
-ARTIFACTS_DIR = Path(__file__).resolve().parents[1] / "artifacts"
+from .paths import ARTIFACTS_DIR
 
 
 @dataclass
@@ -54,7 +54,7 @@ def build_preprocessor() -> ColumnTransformer:
         ]
     )
     numeric_transformer = Pipeline(
-        steps=[("imputer", SimpleImputer(strategy="median"))]
+        steps=[("imputer", SimpleImputer(strategy="median")), ("scale", StandardScaler())]
     )
 
     return ColumnTransformer(
@@ -212,7 +212,11 @@ def train() -> dict[str, Any]:
     y_test_prob = best_model.predict_proba(X_test)[:, 1]
     test_metrics = evaluate_model(y_test.to_numpy(), y_test_prob, threshold_result.threshold)
 
+    data_sha256 = hashlib.sha256(data_path.read_bytes()).hexdigest()
+    split_indices = {name: frame.index.tolist() for name, frame in [("train", X_train), ("calibration", X_cal), ("selection", X_val), ("test", X_test)]}
     artifacts = {
+        "data_sha256": data_sha256,
+        "test_indices": split_indices["test"],
         "model": best_model,
         "features": FEATURE_COLUMNS,
         "categorical_features": CATEGORICAL_COLUMNS,
@@ -236,7 +240,14 @@ def train() -> dict[str, Any]:
     }
 
     metadata_payload = {
-        "trained_at": datetime.utcnow().isoformat() + "Z",
+        "data_sha256": data_sha256,
+        "split_indices": split_indices,
+        "source": "https://archive.ics.uci.edu/dataset/350/defaultofcreditcardclients",
+        "currency": "TWD",
+        "prediction_horizon": "next month",
+        "split_seeds": [42, 43],
+        "sklearn_version": __import__("sklearn").__version__,
+        "trained_at": datetime.now(timezone.utc).isoformat(),
         "rows": int(df.shape[0]),
         "features": FEATURE_COLUMNS,
         "target": TARGET_COLUMN,

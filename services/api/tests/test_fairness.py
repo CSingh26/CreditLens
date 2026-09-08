@@ -1,3 +1,5 @@
+import hashlib
+import pytest
 import numpy as np
 import pandas as pd
 from ml import fairness
@@ -12,8 +14,19 @@ def test_fairness_groups_existing_feature_columns_without_duplicate_join(tmp_pat
     class FixedModel:
         def predict_proba(self, values):
             return np.tile([.7,.3],(len(values),1))
-    monkeypatch.setattr(fairness,'load_artifacts',lambda:dict(model=FixedModel(),threshold=.5))
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    monkeypatch.setattr(fairness,'load_artifacts',lambda:dict(model=FixedModel(),threshold=.5, data_sha256=digest, test_indices=list(range(68,80))))
     monkeypatch.setattr(fairness,'download_data',lambda:path)
     report = fairness.build_fairness_report()
     assert report['overall']['count'] == 12
     assert all(sum(g['count'] for g in s['groups']) == 12 for s in report['slices'])
+    path.write_text(path.read_text() + '\n')
+    with pytest.raises(FileNotFoundError, match='changed'):
+        fairness.build_fairness_report()
+
+
+def test_missing_class_fairness_rates_are_undefined():
+    result = fairness.group_metrics(pd.Series([0, 0]), pd.Series([.1, .2]), .5)
+    assert result['tpr'] is None
+    result = fairness.group_metrics(pd.Series([1, 1]), pd.Series([.1, .2]), .5)
+    assert result['fpr'] is None
