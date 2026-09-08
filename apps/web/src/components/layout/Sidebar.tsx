@@ -13,7 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Lending analysis", icon: LayoutDashboard },
   { href: "/applicants", label: "Applicants", icon: Users },
   { href: "/fairness", label: "Fairness", icon: ClipboardCheck },
   { href: "/monitoring", label: "Monitoring", icon: Activity },
@@ -24,7 +24,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex h-full w-64 flex-col border-r border-[var(--border)] bg-[var(--surface)]">
+    <aside className="flex h-full w-full md:w-56 shrink-0 flex-col border-r border-[var(--border)] bg-[var(--surface)]">
       <div className="flex items-center gap-3 border-b border-[var(--border)] px-6 py-5">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent)] text-white">
           CL

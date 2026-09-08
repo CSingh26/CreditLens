@@ -18,6 +18,7 @@ import { getFairnessReport } from "@/lib/api";
 
 export default async function FairnessPage() {
   const report = await getFairnessReport();
+  if (!report) return <p role="status">Data unavailable. Start the API and train the historical research model to load this report.</p>;
 
   return (
     <div className="space-y-6">

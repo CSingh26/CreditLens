@@ -1,19 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, IBM_Plex_Sans } from "next/font/google";
-
 import "./globals.css";
-
-const plexSans = IBM_Plex_Sans({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const fraunces = Fraunces({
-  variable: "--font-serif",
-  subsets: ["latin"],
-  weight: ["500", "700"],
-});
 
 export const metadata: Metadata = {
   title: "CreditLens",
@@ -28,7 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${plexSans.variable} ${fraunces.variable} bg-[var(--background)] text-[var(--foreground)] antialiased`}
+        className={"bg-[var(--background)] text-[var(--foreground)] antialiased"}
       >
         {children}
       </body>

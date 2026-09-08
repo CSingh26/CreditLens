@@ -50,8 +50,24 @@ app.add_middleware(
 @app.middleware("http")
 async def limit_body_size(request: Request, call_next):
     content_length = request.headers.get("content-length")
-    if content_length and int(content_length) > settings.max_request_size:
-        return JSONResponse(status_code=413, content={"detail": "Request body too large."})
+    if content_length:
+        try:
+            size = int(content_length)
+            if size < 0:
+                raise ValueError
+        except ValueError:
+            return JSONResponse(status_code=400, content={"detail": "Invalid Content-Length."})
+        if size > settings.max_request_size:
+            return JSONResponse(status_code=413, content={"detail": "Request body too large."})
+    chunks = []
+    size = 0
+    async for chunk in request.stream():
+        size += len(chunk)
+        if size > settings.max_request_size:
+            return JSONResponse(status_code=413, content={"detail": "Request body too large."})
+        chunks.append(chunk)
+    # Starlette replays this bounded cached body to downstream validation.
+    request._body = b"".join(chunks)
     return await call_next(request)
 
 

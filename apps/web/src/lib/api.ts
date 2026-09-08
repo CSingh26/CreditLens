@@ -24,19 +24,8 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T | nul
   }
 }
 
-export async function getModelMetrics(): Promise<ModelMetrics> {
-  const fallback: ModelMetrics = {
-    selected_model: "logistic_regression",
-    test_metrics: {
-      roc_auc: 0.79,
-      pr_auc: 0.56,
-      brier_score: 0.18,
-      confusion: { tn: 3820, fp: 780, fn: 620, tp: 920 },
-      default_rate: 0.22,
-      predicted_rate: 0.25,
-    },
-  };
-  return (await apiFetch<ModelMetrics>("/model/metrics")) ?? fallback;
+export async function getModelMetrics(): Promise<ModelMetrics | null> {
+  return apiFetch<ModelMetrics>("/model/metrics");
 }
 
 export async function getApplicants(
@@ -63,57 +52,10 @@ export async function scoreApplicant(payload: Record<string, number>) {
   });
 }
 
-export async function getFairnessReport(): Promise<FairnessReport> {
-  const fallback: FairnessReport = {
-    generated_at: new Date().toISOString(),
-    threshold: 0.32,
-    notes: "Fairness diagnostics only. Results are descriptive and not a compliance guarantee.",
-    overall: {
-      group: "overall",
-      count: 10000,
-      default_rate: 0.22,
-      selection_rate: 0.25,
-      tpr: 0.62,
-      fpr: 0.28,
-      auc: 0.78,
-    },
-    slices: [
-      {
-        feature: "SEX",
-        groups: [
-          { group: "1", count: 5500, default_rate: 0.23, selection_rate: 0.26, tpr: 0.61, fpr: 0.29, auc: 0.77 },
-          { group: "2", count: 4500, default_rate: 0.21, selection_rate: 0.24, tpr: 0.63, fpr: 0.27, auc: 0.79 },
-        ],
-      },
-    ],
-  };
-
-  return (await apiFetch<FairnessReport>("/fairness/report")) ?? fallback;
+export async function getFairnessReport(): Promise<FairnessReport | null> {
+  return apiFetch<FairnessReport>("/fairness/report");
 }
 
-export async function getMonitoringSummary(): Promise<MonitoringSummary> {
-  const fallback: MonitoringSummary = {
-    generated_at: new Date().toISOString(),
-    count: 200,
-    features: [
-      {
-        feature: "LIMIT_BAL",
-        baseline_mean: 160000,
-        current_mean: 150000,
-        mean_shift: -0.25,
-        psi: 0.08,
-        drift_level: "low",
-      },
-      {
-        feature: "PAY_0",
-        baseline_mean: 0.2,
-        current_mean: 0.6,
-        mean_shift: 0.4,
-        psi: 0.18,
-        drift_level: "moderate",
-      },
-    ],
-  };
-
-  return (await apiFetch<MonitoringSummary>("/monitoring/summary")) ?? fallback;
+export async function getMonitoringSummary(): Promise<MonitoringSummary | null> {
+  return apiFetch<MonitoringSummary>("/monitoring/summary");
 }

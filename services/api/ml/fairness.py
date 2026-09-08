@@ -90,7 +90,7 @@ def build_fairness_report() -> dict[str, Any]:
     slices = []
     for feature in ["SEX", "EDUCATION", "AGE_BAND"]:
         group_entries = []
-        for group_value, indices in X_test.join(df[feature]).groupby(feature).groups.items():
+        for group_value, indices in df.loc[X_test.index].groupby(feature).groups.items():
             y_group = y_test.loc[indices]
             y_prob_group = y_prob.loc[indices]
             metrics = group_metrics(y_group, y_prob_group, threshold)

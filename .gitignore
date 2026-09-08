@@ -22,3 +22,8 @@ services/api/*.db
 
 # OS
 .DS_Store
+
+*.db
+playwright-report/
+test-results/
+*.tsbuildinfo

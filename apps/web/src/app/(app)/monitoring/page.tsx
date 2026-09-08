@@ -19,6 +19,7 @@ import { getMonitoringSummary } from "@/lib/api";
 
 export default async function MonitoringPage() {
   const summary = await getMonitoringSummary();
+  if (!summary) return <p role="status">Data unavailable. Start the API and train the historical research model to load this report.</p>;
   const chartData = summary.features.slice(0, 6).map((feature) => ({
     feature: feature.feature,
     psi: Number(feature.psi.toFixed(2)),
