@@ -11,6 +11,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, PlainTextResponse
 from sqlmodel import Session, select
 
+from .cohort import CohortInput, analyze_cohort
+from .lending import LendingInput, analyze_lending
 from .config import settings
 from .database import get_session, init_db
 from .models import Applicant, Score
@@ -230,3 +232,13 @@ def score_stored_applicant(
         created_at=score.created_at,
         explanations=explanations,
     )
+
+
+@app.post("/analysis/lending")
+def lending_analysis(payload: LendingInput) -> dict:
+    return analyze_lending(payload)
+
+
+@app.post("/analysis/cohort")
+def cohort_analysis(payload: CohortInput) -> dict:
+    return analyze_cohort(payload)
