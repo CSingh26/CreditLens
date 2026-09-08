@@ -6,5 +6,24 @@
   "scripts": {
     "lint": "pnpm --filter web lint",
     "typecheck": "pnpm --filter web typecheck"
+  },
+  "pnpm": {
+    "overrides": {
+      "minimatch@<4": "3.1.4",
+      "minimatch@>=9 <10": "9.0.7",
+      "ajv@<7": "6.15.0",
+      "flatted@<4": "3.4.2",
+      "brace-expansion@<2": "1.1.18",
+      "brace-expansion@>=2 <3": "2.1.4",
+      "picomatch@<3": "2.3.2",
+      "picomatch@>=4 <5": "4.0.4",
+      "lodash": "4.18.0",
+      "postcss": "8.5.28",
+      "js-yaml@>=4 <5": "4.3.1",
+      "@babel/core@<8": "7.29.6",
+      "nanoid@<4": "3.3.18",
+      "browserslist": "4.28.7",
+      "@humanfs/node@<0.16.8": "0.16.8"
+    }
   }
 }

@@ -25,9 +25,16 @@ jobs:
           pnpm install --frozen-lockfile
           python -m venv .venv
           .venv/bin/pip install -r services/api/requirements-lock.txt
+      - name: Dependency advisories and credential patterns
+        run: |
+          pnpm audit
+          python -m venv /tmp/creditlens-audit
+          /tmp/creditlens-audit/bin/pip install pip-audit==2.10.1
+          /tmp/creditlens-audit/bin/pip-audit -r services/api/requirements-lock.txt
+          .venv/bin/python scripts/check_secrets.py
       - name: Lint and type check
         run: |
-          .venv/bin/ruff check services/api
+          .venv/bin/ruff check services/api scripts/check_secrets.py
           pnpm lint
           pnpm typecheck
       - name: Formula, invalid data, API and model regression tests

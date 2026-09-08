@@ -1,0 +1,43 @@
+{
+  "checked_at": "2026-09-08T22:02:21.828878+00:00",
+  "baseline_revision": "078a37b046d19a352efa4d296b240b30d547b6bb",
+  "python": {
+    "tool": "pip-audit 2.10.1",
+    "command": "pip-audit -r services/api/requirements-lock.txt",
+    "before": [
+      {
+        "package": "starlette",
+        "version": "0.38.6",
+        "advisory_ids": [
+          "PYSEC-2026-161",
+          "PYSEC-2026-1941",
+          "PYSEC-2026-1943",
+          "PYSEC-2026-2280",
+          "PYSEC-2026-2281",
+          "PYSEC-2026-248",
+          "PYSEC-2026-249"
+        ]
+      },
+      {
+        "package": "pytest",
+        "version": "8.3.3",
+        "advisory_ids": [
+          "PYSEC-2026-1845"
+        ]
+      }
+    ],
+    "after_known_vulnerabilities": 0
+  },
+  "node": {
+    "tool": "pnpm 9.12.3",
+    "command": "pnpm audit",
+    "vulnerability_counts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    }
+  },
+  "limits": "Known-advisory snapshot; no ignored advisory IDs. Not a proof of absence of vulnerabilities."
+}

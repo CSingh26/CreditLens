@@ -54,6 +54,8 @@ npx pnpm@9.12.3 --filter web exec playwright install chromium
 npx pnpm@9.12.3 --filter web test
 ```
 
+Dependency checks: `npx pnpm@9.12.3 audit`, `pip-audit -r services/api/requirements-lock.txt` (pip-audit 2.10.1 in a separate environment), and `.venv/bin/python scripts/check_secrets.py`. See [dependency audit evidence](docs/DEPENDENCY_AUDIT.md).
+
 Browser tests start isolated API/web processes on ports 8103/3103 and do not require downloaded model data. CI runs installation, lint, TypeScript checking, formulas/invalid-data/API tests, Python compilation, production web build and browser journeys.
 
 ## Financial and engineering evidence
